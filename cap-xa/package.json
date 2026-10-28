@@ -1,1 +1,45 @@
-{"author":"Nguyễn Công Dinh, Cần Thơ","build":{"appId":"vn.nd30.capxa","copyright":"Copyright © Nguyễn Công Dinh","directories":{"output":"dist"},"files":["main.js","preload.js","app/**/*"],"nsis":{"allowToChangeInstallationDirectory":true,"createDesktopShortcut":true,"createStartMenuShortcut":true,"deleteAppDataOnUninstall":false,"oneClick":false,"shortcutName":"Soạn thảo NĐ30 - Cấp xã","uninstallDisplayName":"Soạn thảo văn bản NĐ30 - Cấp xã"},"productName":"Soạn thảo văn bản NĐ30 - Cấp xã","win":{"artifactName":"Soan-thao-ND30-Cap-Xa-Setup.${ext}","target":"nsis"}},"description":"Phần mềm soạn thảo văn bản NĐ30, bản cấp xã theo mô hình chính quyền 2 cấp 2026. Tác giả: Nguyễn Công Dinh, Cần Thơ. Chạy offline trên Windows.","devDependencies":{"electron":"^34.0.0","electron-builder":"^25.0.0"},"main":"main.js","name":"soan-thao-nd30-cap-xa","productName":"Soạn thảo văn bản NĐ30 - Cấp xã","scripts":{"build:win":"electron-builder --win nsis","dist":"electron-builder --win nsis","start":"electron ."},"version":"1.0.0"}
+{
+  "author": "Nguyễn Công Dinh, Cần Thơ",
+  "build": {
+    "appId": "vn.nd30.capxa",
+    "copyright": "Copyright © Nguyễn Công Dinh",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "app/**/*",
+      "icon.ico"
+    ],
+    "nsis": {
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "deleteAppDataOnUninstall": false,
+      "oneClick": false,
+      "shortcutName": "Soạn thảo NĐ30 - Cấp xã",
+      "uninstallDisplayName": "Soạn thảo văn bản NĐ30 - Cấp xã"
+    },
+    "productName": "Soạn thảo văn bản NĐ30 - Cấp xã",
+    "win": {
+      "artifactName": "Soan-thao-ND30-Cap-Xa-Setup.${ext}",
+      "target": "nsis",
+      "icon": "icon.ico"
+    }
+  },
+  "description": "Phần mềm soạn thảo văn bản NĐ30, bản cấp xã theo mô hình chính quyền 2 cấp 2026. Tác giả: Nguyễn Công Dinh, Cần Thơ. Chạy offline trên Windows.",
+  "devDependencies": {
+    "electron": "^34.0.0",
+    "electron-builder": "^25.0.0"
+  },
+  "main": "main.js",
+  "name": "soan-thao-nd30-cap-xa",
+  "productName": "Soạn thảo văn bản NĐ30 - Cấp xã",
+  "scripts": {
+    "build:win": "electron-builder --win nsis",
+    "dist": "electron-builder --win nsis",
+    "start": "electron ."
+  },
+  "version": "1.0.0"
+}
