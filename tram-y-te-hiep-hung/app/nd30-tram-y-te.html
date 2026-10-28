@@ -1832,6 +1832,7 @@ body[data-step="1"] .paperpane,body[data-step="1"] .issues,body[data-step="2"] .
 <button type="button" class="secondary" id="homeOpen">Mở file (.docx, .pdf)</button>
 <button type="button" class="secondary" id="homeDrafts">Quản lý bản nháp</button>
 <button type="button" class="secondary" id="homeExit">Thoát phần mềm</button>
+<button type="button" class="secondary" id="homeDownload">Tải file này về máy (.html)</button>
 </div>
 <div id="draftList" style="text-align:left;display:none"></div>
 <p style="font-size:14px;color:#475569">Chạy offline trên máy của bạn. Văn bản không được gửi lên máy chủ hay AI đám mây. Kiểm tra lại tên, số, ngày và căn cứ trước khi ký và phát hành.</p>
@@ -1848,6 +1849,7 @@ body[data-step="1"] .paperpane,body[data-step="1"] .issues,body[data-step="2"] .
   // Home buttons
   var home=document.getElementById('homeScreen');
   document.getElementById('homeNew').onclick=function(){home.style.display='none';setStep(1)};
+  document.getElementById('homeDownload').onclick=function(){var html='<!DOCTYPE html>\n'+document.documentElement.outerHTML;var blob=new Blob([html],{type:'text/html;charset=utf-8'});var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='Soan-thao-ND30-Tram-Y-Te-Hiep-Hung.html';document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(a.href)},1000);try{toast('Đã tải file về máy. Mở file vừa tải, dùng thử 30 ngày, hết hạn thì nhập key bản quyền ở nút Bản quyền.')}catch(e){}};
   document.getElementById('wizardHome').onclick=function(){try{save()}catch(e){}home.style.display='flex';window.scrollTo(0,0)};
   document.getElementById('homeExit').onclick=function(){if(window.nd30){window.close();return}try{toast('Hãy đóng tab hoặc cửa sổ trình duyệt để thoát phần mềm.')}catch(e){alert('Hãy đóng tab hoặc cửa sổ trình duyệt để thoát phần mềm.')}};
   document.getElementById('homeOpen').onclick=function(){home.style.display='none';var f=document.getElementById('fileIn');if(f)f.click()};
@@ -1904,19 +1906,19 @@ body[data-step="1"] .paperpane,body[data-step="1"] .issues,body[data-step="2"] .
 <label><input type="checkbox" id="geminiConfirm"> Tôi xác nhận đoạn trên không chứa thông tin bệnh nhân, CCCD hay văn bản mật.</label><br><br>
 <button type="button" id="geminiSaveKey" style="padding:10px 14px;cursor:pointer">Lưu key trên máy này</button>
 <button type="button" id="geminiAsk" style="padding:10px 14px;cursor:pointer">Phân tích và tư vấn</button>
-<div id="geminiOut" style="white-space:pre-wrap;background:#fff;border:1px solid #cbd5e1;border-radius:8px;padding:10px;margin-top:10px;min-height:60px">Chưa có kết quả. Trên bản web thường, panel này chỉ hiện khi chạy bằng Electron và đã lưu key.</div>
+<div id="geminiOut" style="white-space:pre-wrap;background:#fff;border:1px solid #cbd5e1;border-radius:8px;padding:10px;margin-top:10px;min-height:60px">Chưa có kết quả. Key Gemini là key của bạn, chỉ lưu trên trình duyệt/máy này, không gửi cho tác giả và không lưu trong code. Bản .exe lưu mã hóa; bản web/bản tải về lưu trên trình duyệt của bạn.</div>
 </div>
 <script>
 (function(){
   var out=document.getElementById('geminiOut');
   document.getElementById('geminiSaveKey').onclick=async function(){
-    if(!window.nd30||!window.nd30.setGeminiKey){out.textContent='Chức năng lưu key chỉ chạy trong bản Electron. Trên bản web, không nhập key vào file HTML.';return}
+    if(!window.nd30||!window.nd30.setGeminiKey){var k=document.getElementById('geminiKey').value||'';if(!k){out.textContent='Hãy nhập key Gemini của bạn rồi bấm Lưu key trên máy này. Key chỉ lưu trên trình duyệt/máy này.';return}try{localStorage.setItem('nd30_gemini_key',k);out.textContent='Đã lưu key Gemini trên trình duyệt/máy này.'}catch(e){out.textContent='Không lưu được key trên trình duyệt này.'}return}
     var r=await window.nd30.setGeminiKey(document.getElementById('geminiKey').value||'');
     out.textContent=r&&r.ok?'Đã lưu key trên máy này (đã mã hóa bằng safeStorage của hệ thống).':'Chưa lưu được key. Kiểm tra lại key và thử lại.';
   };
   document.getElementById('geminiAsk').onclick=async function(){
     if(!document.getElementById('geminiConfirm').checked){out.textContent='Hãy tick xác nhận đoạn trên không chứa thông tin bệnh nhân, CCCD hay văn bản mật trước khi gửi.';return}
-    if(!window.nd30||!window.nd30.geminiAsk){out.textContent='Chức năng Gemini chỉ chạy trong bản Electron đã lưu key. Không gửi văn bản qua bản web này.';return}
+    if(!window.nd30||!window.nd30.geminiAsk){var key2='';try{key2=localStorage.getItem('nd30_gemini_key')||document.getElementById('geminiKey').value||''}catch(e){key2=document.getElementById('geminiKey').value||''}if(!key2){out.textContent='Hãy nhập key Gemini của bạn vào ô trên rồi bấm Lưu key trên máy này trước.';return}try{var resp=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+encodeURIComponent(document.getElementById('geminiModel').value||'gemini-3.8-flash')+':generateContent',{method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':key2},body:JSON.stringify({contents:[{parts:[{text:prompt}]}]})});var dj=await resp.json();var t=dj.candidates&&dj.candidates[0]&&dj.candidates[0].content&&dj.candidates[0].content.parts?dj.candidates[0].content.parts.map(function(x){return x.text||''}).join(''):'';out.textContent=t?t:('Lỗi: '+((dj.error&&dj.error.message)||'không có kết quả'))}catch(e){out.textContent='Lỗi khi gọi Gemini: '+e.message}return}
     out.textContent='Đang phân tích bằng Gemini…';
     var q=document.getElementById('geminiInput').value||'';
     var prompt='Bạn là trợ lý phân tích văn bản hành chính y tế cấp xã. Chỉ phân tích và tư vấn, không tự quyết định, không tự đặt số văn bản, ngày, số tiền hay tên người. Nếu thiếu căn cứ pháp lý thì ghi rõ là cần kiểm tra thêm, không bịa căn cứ. Trả lời ngắn gọn, rõ từng mục.\n\nNội dung cần phân tích:\n'+q;
