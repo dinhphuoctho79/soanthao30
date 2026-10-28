@@ -1893,7 +1893,7 @@ body[data-step="1"] .paperpane,body[data-step="1"] .issues,body[data-step="2"] .
 <b>Phân tích và tư vấn bằng Gemini — chỉ dùng khi bạn xác nhận không có dữ liệu nhạy cảm</b>
 <p style="font-size:14px;color:#334155">Không gửi tên bệnh nhân, số CCCD, hồ sơ bệnh án hay văn bản mật vào đây. Chỉ gửi khung văn bản, câu hỏi chung hoặc đoạn văn đã xóa thông tin cá nhân. Kết quả của Gemini chỉ là tư vấn, cán bộ phải kiểm tra lại tên, số, ngày và căn cứ trước khi ký.</p>
 <label style="display:block;margin:6px 0">API key Gemini (chỉ lưu trên máy này, không lưu trong code)<br><input type="password" id="geminiKey" style="width:100%;padding:8px"></label>
-<label style="display:block;margin:6px 0">Model <input type="text" id="geminiModel" value="gemini-2.5-flash" style="padding:8px;width:220px"></label>
+<label style="display:block;margin:6px 0">Model <input type="text" id="geminiModel" value="gemini-3.8-flash" style="padding:8px;width:220px"></label>
 <label style="display:block;margin:6px 0">Câu hỏi / đoạn văn cần phân tích<br><textarea id="geminiInput" rows="5" style="width:100%;padding:8px"></textarea></label>
 <label><input type="checkbox" id="geminiConfirm"> Tôi xác nhận đoạn trên không chứa thông tin bệnh nhân, CCCD hay văn bản mật.</label><br><br>
 <button type="button" id="geminiSaveKey" style="padding:10px 14px;cursor:pointer">Lưu key trên máy này</button>
@@ -1914,7 +1914,7 @@ body[data-step="1"] .paperpane,body[data-step="1"] .issues,body[data-step="2"] .
     out.textContent='Đang phân tích bằng Gemini…';
     var q=document.getElementById('geminiInput').value||'';
     var prompt='Bạn là trợ lý phân tích văn bản hành chính y tế cấp xã. Chỉ phân tích và tư vấn, không tự quyết định, không tự đặt số văn bản, ngày, số tiền hay tên người. Nếu thiếu căn cứ pháp lý thì ghi rõ là cần kiểm tra thêm, không bịa căn cứ. Trả lời ngắn gọn, rõ từng mục.\n\nNội dung cần phân tích:\n'+q;
-    try{var r=await window.nd30.geminiAsk({prompt:prompt,model:document.getElementById('geminiModel').value||'gemini-2.5-flash'});out.textContent=(r&&r.text)?r.text:('Lỗi: '+((r&&r.error)||'không có kết quả'))}catch(e){out.textContent='Lỗi khi gọi Gemini: '+e.message}
+    try{var r=await window.nd30.geminiAsk({prompt:prompt,model:document.getElementById('geminiModel').value||'gemini-3.8-flash'});out.textContent=(r&&r.text)?r.text:('Lỗi: '+((r&&r.error)||'không có kết quả'))}catch(e){out.textContent='Lỗi khi gọi Gemini: '+e.message}
   };
 })();
 </script>
