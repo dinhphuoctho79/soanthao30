@@ -90,7 +90,7 @@ ipcMain.handle('gemini:ask', async (_e, req) => {
     if (!fs.existsSync(geminiKeyPath())) return { error: 'Chưa lưu API key Gemini trên máy này.' };
     if (!safeStorage.isEncryptionAvailable()) return { error: 'Máy này chưa bật mã hóa hệ thống.' };
     const key = safeStorage.decryptString(fs.readFileSync(geminiKeyPath()));
-    const model = String((req && req.model) || 'gemini-2.5-flash').replace(/[^a-zA-Z0-9._-]/g, '');
+    const model = String((req && req.model) || 'gemini-3.8-flash').replace(/[^a-zA-Z0-9._-]/g, '');
     const prompt = String((req && req.prompt) || '').slice(0, 20000);
     if (!prompt.trim()) return { error: 'Chưa nhập nội dung cần phân tích.' };
     const res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/' + model + ':generateContent', {

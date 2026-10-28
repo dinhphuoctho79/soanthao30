@@ -84,7 +84,7 @@ hiện hạn dùng.
   gửi qua renderer và không đưa key vào đường link.
 - Nếu key bị lộ, vào Google AI Studio thu hồi key cũ và tạo
   key mới, rồi lưu lại trong app.
-- Model mặc định trong panel là `gemini-2.5-flash`. Bạn có thể
+- Model mặc định trong panel là `gemini-3.8-flash` (tương ứng 3.8 Flash trong app Gemini, mode cân bằng dùng hằng ngày). Bạn có thể
   đổi model trong ô Model, nhưng phải kiểm tra lại tên model
   còn được Google hỗ trợ vào thời điểm dùng.
 
