@@ -263,7 +263,8 @@ dialog textarea{min-height:320px;font-family:var(--font-doc);font-size:15px}
 .dlgacts{display:flex;justify-content:flex-end;gap:8px;margin-top:10px;flex-wrap:wrap}
 
 @media print{
-  @page{size:A4;margin:0}
+  @page{size:A4;margin:12mm 0 0 0;@top-center{content:counter(page);font-family:"Times New Roman",Tinos,"Liberation Serif",serif;font-size:13pt}}
+  @page:first{@top-center{content:none}}
   body{background:#fff}
   .bar,.form,.issues,.paperhead,body::before,.toast,.dropzone,.wizard,#wizardBar,.home,.profiles,dialog,#geminiPanel{display:none!important}
   body[data-step] .paperpane{display:block!important;overflow:visible!important}
@@ -272,7 +273,7 @@ dialog textarea{min-height:320px;font-family:var(--font-doc);font-size:15px}
   .work{display:block;padding:0}
   .paperpane{padding:0;background:#fff;border:0}
   #paperBox{width:auto!important;height:auto!important}
-  .paper{position:static;transform:none!important;box-shadow:none;min-height:0}
+  .paper{position:static;transform:none!important;box-shadow:none;min-height:0;padding:8mm 15mm 20mm 30mm}
   .paper mark{background:none;border:0}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
