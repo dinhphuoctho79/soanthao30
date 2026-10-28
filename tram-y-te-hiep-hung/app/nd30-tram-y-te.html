@@ -12,24 +12,24 @@
 /* Bố cục: thanh công cụ trên cùng; ba cột — biểu mẫu nhập | trang A4 xem trước | bảng kiểm tra lỗi. Điện thoại: xếp chồng. */
 :root{
   --bg:#eceff3; --surface:#ffffff; --surface-2:#f5f6f9; --line:#d5dae2; --fg:#1b2230; --muted:#5a6475;
-  --accent:#1447a6; --accent-ink:#ffffff; --accent-soft:#e6eefa;
+  --accent:#1447a6; --accent-ink:#ffffff; --accent-soft:#e3edfb;
   --err:#c0262d; --warn:#a86200; --tip:#2563a8; --ok:#2e7a4d;
   --err-soft:#fbe7e7; --warn-soft:#fdf1df; --tip-soft:#e6eefa; --ok-soft:#e3f3e9;
   --desk:#d8dce3; --paper:#ffffff; --paper-ink:#000000; --mark:#ffe08a;
   --c-key:#0e7490; --c-file:#2563eb; --c-ai:#7c3aed; --c-chk:#1447a6; --c-out:#15803d; --c-ref:#b45309; --c-bg:#be185d;
-  --pat:rgba(20,71,166,.07); --pat2:rgba(20,71,166,.06); --tint1:rgba(27,127,121,.16); --veil:transparent;
+  --pat:rgba(179,38,30,.07); --pat2:rgba(179,38,30,.06); --tint1:rgba(27,127,121,.16); --veil:transparent;
   --font-ui:"Be Vietnam Pro","Segoe UI",system-ui,sans-serif;
   --font-doc:"Times New Roman",Tinos,"Liberation Serif",serif;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#13161b; --surface:#1b1f26; --surface-2:#222731; --line:#333a47; --fg:#e6e9ef; --muted:#9aa3b3;
-  --accent:#e5594f; --accent-ink:#1a0a09; --accent-soft:#3b1f1d;
+  --accent:#6ea8ff; --accent-ink:#0b1e3a; --accent-soft:#1c2f4d;
   --err:#ff7a7a; --warn:#f2ad4b; --tip:#78aef2; --ok:#62c78f;
   --err-soft:#3a1f22; --warn-soft:#3a2d17; --tip-soft:#1c2a3d; --ok-soft:#1a3326;
   --desk:#0e1115; --mark:#ffe08a; --c-key:#38bdf8; --c-file:#6ea0ff; --c-ai:#b293ff; --c-chk:#ef6b62; --c-out:#4fc785; --c-ref:#f0a640; --c-bg:#f472b6; --pat:rgba(229,89,79,.09); --pat2:rgba(229,89,79,.07); --tint1:rgba(60,170,160,.14); --veil:rgba(19,22,27,.35); color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#13161b; --surface:#1b1f26; --surface-2:#222731; --line:#333a47; --fg:#e6e9ef; --muted:#9aa3b3;
-  --accent:#e5594f; --accent-ink:#1a0a09; --accent-soft:#3b1f1d;
+  --accent:#6ea8ff; --accent-ink:#0b1e3a; --accent-soft:#1c2f4d;
   --err:#ff7a7a; --warn:#f2ad4b; --tip:#78aef2; --ok:#62c78f;
   --err-soft:#3a1f22; --warn-soft:#3a2d17; --tip-soft:#1c2a3d; --ok-soft:#1a3326;
   --desk:#0e1115; --mark:#ffe08a; --c-key:#38bdf8; --c-file:#6ea0ff; --c-ai:#b293ff; --c-chk:#ef6b62; --c-out:#4fc785; --c-ref:#f0a640; --c-bg:#f472b6; --pat:rgba(229,89,79,.09); --pat2:rgba(229,89,79,.07); --tint1:rgba(60,170,160,.14); --veil:rgba(19,22,27,.35); color-scheme:dark}
@@ -265,7 +265,9 @@ dialog textarea{min-height:320px;font-family:var(--font-doc);font-size:15px}
 @media print{
   @page{size:A4;margin:0}
   body{background:#fff}
-  .bar,.form,.issues,.paperhead,body::before,.toast,.dropzone{display:none!important}
+  .bar,.form,.issues,.paperhead,body::before,.toast,.dropzone,.wizard,#wizardBar,.home,.profiles,dialog{display:none!important}
+  body[data-step] .paperpane{display:block!important;overflow:visible!important}
+  .paperpane{display:block!important;overflow:visible!important}
   body{background-image:none!important}
   .work{display:block;padding:0}
   .paperpane{padding:0;background:#fff;border:0}
@@ -580,24 +582,23 @@ const VT_KNOWN=VT_RULES.map(r=>r[1]);
 const autoVT=n=>{const u=up(String(n||'')).replace(/\s+/g,' ').trim();const r=VT_RULES.find(([re])=>re.test(u));return r?r[1]:null};
 const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
 const TPL={
- qdloi:{loai:'QĐ',so:'5',khan:'',deTrongNgay:false,trichYeu:'Về việc nâng bậc lương thường xuyên đối với viên chức',kinhGui:'',
-  thamQuyen:'',
-  canCu:'Căn cứ Nghị định 204/2004/NĐ-CP ngày 14/12/2004 của Chính phủ về chế độ tiền lương đối với cán bộ, công chức, viên chức và lực lượng vũ trang\nCăn cứ Nghị định số 110/2004/NĐ-CP ngày 08 tháng 4 năm 2004 của Chính phủ về công tác văn thư;\nCăn cứ Luật Khám bệnh, chữa bệnh ngày 23 tháng 11 năm 2009;\nCăn cứ Thông tư số 08/2013/TT-BNV ngày 31 tháng 7 năm 2013 của Bộ Nội vụ hướng dẫn thực hiện chế độ nâng bậc lương thường xuyên và nâng bậc lương trước thời hạn đối với cán bộ, công chức, viên chức;\nCăn cứ Quyết định số 1234/QĐ-UBND ngày 10 tháng 01 năm 2025 của Ủy ban nhân dân tỉnh quy định chức năng, nhiệm vụ, quyền hạn và cơ cấu tổ chức của Ủy ban nhân dân xã;\nTheo đề nghị của Trưởng phòng Tổ chức cán bộ',
-  noiDung:'Điều 1. Nâng bậc lương thường xuyên đối với bà Lê Thị B, viên chức Khoa Nội tổng hợp, từ bậc 3, hệ số 3,00 lên bậc 4, hệ số 3,33 kể từ ngày 01 tháng 10 năm 2026.\nThời gian tính nâng bậc lương lần sau kể từ ngày 01 tháng 10 năm 2026 .Mức chênh lệch được truy lĩnh là 1,716,000 đồng (Bằng chữ: Một triệu bảy trăm mười sáu nghìn đồng).\nĐiều 2. Phòng Tài chính kế toán có trách nghiệm cập nhập và chi trả lương cho viên chức theo đúng quy định vaf bổ xung hồ sơ.\nĐiều 4. Trưởng phòng Tổ chức cán bộ, Trưởng phòng Tài chính kế toán và bà Lê Thị B chịu trách nhiệm thi hành Quyết định này',
-  quyenHan:'',chucVu:'PHÓ CHỦ TỊCH',hoTen:'nguyễn văn a',noiNhan:'Như Điều 4\nỦy ban nhân dân tỉnh (b/c)\nLưu VT, TCCB'},
- cv:{loai:'CV',so:'',khan:'',deTrongNgay:true,trichYeu:'đề nghị cấp bổ sung kinh phí mua sắm trang thiết bị y tế năm 2026',kinhGui:'Ủy ban nhân dân tỉnh tỉnh Vĩnh Long',thamQuyen:'',
-  canCu:'',noiDung:'Thực hiện Kế hoạch số …/KH-UBND ngày … tháng … năm 2026 của Ủy ban nhân dân tỉnh về mua sắm trang thiết bị y tế năm 2026, Ủy ban nhân dân xã Tân Hưng báo cáo và đề nghị như sau:\n1. Tình hình thực hiện\nĐến ngày 30 tháng 9 năm 2026, Ủy ban nhân dân xã đã thực hiện mua sắm 12/18 danh mục trang thiết bị được phê duyệt, giá trị giải ngân 2.450.000.000 đồng.\n2. Đề nghị\nĐề nghị Ủy ban nhân dân tỉnh xem xét, cấp bổ sung kinh phí để Ủy ban nhân dân xã hoàn thành 06 danh mục còn lại trong năm 2026.\nỦy ban nhân dân xã Tân Hưng kính đề nghị Ủy ban nhân dân tỉnh quan tâm, xem xét./.',
-  quyenHan:'KT.',chucVu:'PHÓ CHỦ TỊCH',hoTen:'',noiNhan:'- Như trên;\n- Ban Giám đốc;\n- Lưu: VT, VP.'},
- tb:{loai:'TB',so:'',khan:'',deTrongNgay:true,trichYeu:'Về việc nghỉ Tết Dương lịch năm 2027',kinhGui:'',thamQuyen:'',canCu:'',
-  noiDung:'Căn cứ thông báo của Ủy ban nhân dân tỉnh về việc nghỉ Tết Dương lịch năm 2027, Ủy ban nhân dân xã thông báo đến các khoa, phòng như sau:\n1. Viên chức, người lao động được nghỉ Tết Dương lịch 01 ngày, thứ Sáu, ngày 01 tháng 01 năm 2027.\n2. Các khoa lâm sàng, cận lâm sàng bố trí trực theo quy định, bảo đảm hoạt động khám bệnh, chữa bệnh liên tục.\n3. Trưởng các khoa, phòng gửi lịch trực về Phòng Kế hoạch tổng hợp trước ngày 25 tháng 12 năm 2026./.',
-  quyenHan:'KT.',chucVu:'PHÓ CHỦ TỊCH',hoTen:'',noiNhan:'- Các khoa, phòng;\n- Lưu: VT, TCCB.'},
- ttr:{loai:'TTr',so:'',khan:'',deTrongNgay:true,trichYeu:'Về việc phê duyệt dự toán sửa chữa hệ thống điện Khoa Hồi sức tích cực',kinhGui:'Giám đốc Ủy ban nhân dân xã',thamQuyen:'',canCu:'',
-  noiDung:'Hệ thống điện Khoa Hồi sức tích cực được lắp đặt từ năm 2012, hiện xuống cấp, nhiều lần mất điện cục bộ ảnh hưởng đến máy thở và monitor theo dõi người bệnh.\nPhòng Hành chính quản trị kính trình Giám đốc xem xét, phê duyệt dự toán sửa chữa với tổng kinh phí 185.000.000 đồng (Bằng chữ: Một trăm tám mươi lăm triệu đồng), nguồn kinh phí từ Quỹ phát triển hoạt động sự nghiệp.\nKính trình Giám đốc xem xét, quyết định./.',
-  quyenHan:'',chucVu:'TRƯỞNG PHÒNG HÀNH CHÍNH QUẢN TRỊ',hoTen:'',noiNhan:'- Như trên;\n- Phòng VP;\n- Lưu: VT, HCQT.'},
- gm:{loai:'GM',so:'',khan:'',deTrongNgay:true,trichYeu:'Họp giao ban công tác tài chính quý IV năm 2026',kinhGui:'',thamQuyen:'',canCu:'',
-  noiDung:'Ủy ban nhân dân xã Tân Hưng trân trọng kính mời Trưởng các khoa, phòng tham dự cuộc họp giao ban công tác tài chính quý IV năm 2026.\nThời gian: 14 giờ 00, thứ Năm, ngày 05 tháng 11 năm 2026.\nĐịa điểm: Hội trường Ủy ban nhân dân xã.\nĐề nghị các khoa, phòng chuẩn bị số liệu thu, chi của đơn vị và tham dự đúng thành phần./.',
-  quyenHan:'KT.',chucVu:'PHÓ CHỦ TỊCH',hoTen:'',noiNhan:'- Như trên;\n- Lưu: VT, VP.'},
- new:{loai:'TB',so:'',khan:'',deTrongNgay:true,trichYeu:'',kinhGui:'',thamQuyen:'',canCu:'',noiDung:'',quyenHan:'KT.',chucVu:'PHÓ CHỦ TỊCH',hoTen:'',noiNhan:'- Lưu: VT, VP.'}
+ qdloi:{loai:'QĐ',so:'',khan:'',deTrongNgay:true,trichYeu:'Về việc thành lập Tổ [nội dung cụ thể] của Trạm Y tế Xã Hiệp Hưng',kinhGui:'',thamQuyen:'',
+  canCu:'Căn cứ văn bản quy định trực tiếp về nội dung quyết định;\nTheo đề nghị của [đơn vị]',
+  noiDung:'Điều 1. Thành lập Tổ [tên tổ] gồm các ông, bà có tên sau: [danh sách].\nĐiều 2. Tổ có trách nghiệm tham mưu, giúp Trạm trưởng triển khai [nhiệm vụ] vaf báo cáo kết quả.\nĐiều 4. Các ông, bà có tên tại Điều 1 chịu trách nhiệm thi hành Quyết định này',
+  quyenHan:'',chucVu:'TRẠM TRƯỞNG',hoTen:'nguyễn văn a',noiNhan:'Như Điều 4\nLưu: VT.'},
+ cv:{loai:'CV',so:'',khan:'',deTrongNgay:true,trichYeu:'Về việc [đề nghị … / báo cáo …]',kinhGui:'Trung tâm Y tế [tên khu vực — xác nhận trước khi phát hành]',thamQuyen:'',
+  canCu:'',noiDung:'Trạm Y tế Xã Hiệp Hưng báo cáo và đề nghị như sau:\n1. Tình hình: [tình hình].\n2. Đề nghị: [đề nghị].\nTrạm Y tế Xã Hiệp Hưng kính đề nghị Trung tâm Y tế quan tâm, xem xét./.',
+  quyenHan:'',chucVu:'TRẠM TRƯỞNG',hoTen:'',noiNhan:'- Như trên;\n- Lưu: VT.'},
+ tb:{loai:'TB',so:'',khan:'',deTrongNgay:true,trichYeu:'Về việc [lịch tiêm chủng / lịch khám / lịch trực …]',kinhGui:'',thamQuyen:'',
+  canCu:'',noiDung:'Trạm Y tế Xã Hiệp Hưng thông báo: [nội dung].\nThời gian: [thời gian].\nĐịa điểm: [địa điểm].\nĐối tượng: [đối tượng].\nGiấy tờ cần mang theo: [giấy tờ]./.',
+  quyenHan:'',chucVu:'TRẠM TRƯỞNG',hoTen:'',noiNhan:'- Người dân trên địa bàn;\n- Lưu: VT.'},
+ ttr:{loai:'TTr',so:'',khan:'',deTrongNgay:true,trichYeu:'Về việc đề nghị cấp bổ sung [vật tư / trang thiết bị …]',kinhGui:'Trung tâm Y tế [tên khu vực — xác nhận trước khi phát hành]',thamQuyen:'',
+  canCu:'',noiDung:'1. Sự cần thiết: [lý do].\n2. Nội dung đề xuất: [nội dung].\n3. Kinh phí và nguồn: [kinh phí, nguồn].\nKính trình Trung tâm Y tế xem xét, quyết định./.',
+  quyenHan:'',chucVu:'TRẠM TRƯỞNG',hoTen:'',noiNhan:'- Như trên;\n- Lưu: VT.'},
+ gm:{loai:'GM',so:'',khan:'',deTrongNgay:true,trichYeu:'Họp [nội dung cuộc họp]',kinhGui:'',thamQuyen:'',
+  canCu:'',noiDung:'Trạm Y tế Xã Hiệp Hưng trân trọng kính mời [thành phần] tham dự cuộc họp [nội dung].\nThời gian: [giờ, ngày].\nĐịa điểm: [địa điểm].\nNội dung: [nội dung].\nĐề nghị các thành phần tham dự đầy đủ, đúng giờ./.',
+  quyenHan:'',chucVu:'TRẠM TRƯỞNG',hoTen:'',noiNhan:'- Như trên;\n- Lưu: VT.'},
+ new:{loai:'TB',so:'',khan:'',deTrongNgay:true,trichYeu:'',kinhGui:'',thamQuyen:'',canCu:'',noiDung:'',quyenHan:'',chucVu:'TRẠM TRƯỞNG',hoTen:'',noiNhan:'- Lưu: VT.'}
 };
 const BLANK_DOC={so:'',khan:'',deTrongNgay:false,trichYeu:'',kinhGui:'',thamQuyen:'',canCu:'',noiDung:'',quyenHan:'',chucVu:'',hoTen:'',noiNhan:''};
 let S={...ORG_DEFAULT,...TPL.qdloi,ngay:today(),coChu:'14',gianDong:'1.2',showMark:true};
@@ -1772,7 +1773,7 @@ function init(){
   $('btnDocx').onclick=async()=>{closeMenus();try{const b=zip(docxFiles());
     if(DOWNLOADS){try{await DOWNLOADS.save({filename:fileName(),data:b});toast('Đã lưu '+fileName()+'.')}catch(e){toast(e&&e.code==='declined'?'Đã hủy tải file.':'Không tải được file trong trang này. Hãy mở phần mềm bằng file HTML trên máy.')}return}
     const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=fileName();document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500);toast('Đang tải '+fileName()+'. Nếu không thấy file, hãy mở phần mềm bằng file HTML trên máy.')}catch(err){toast('Không tạo được file Word: '+err.message)}};
-  $('btnPrint').onclick=()=>{closeMenus();toast('Nếu hộp thoại in không hiện, hãy mở file HTML trên máy rồi bấm lại.');setTimeout(()=>window.print(),50)};
+  $('btnPrint').onclick=()=>{closeMenus();var hm=document.getElementById('homeScreen');if(hm&&hm.style.display!=='none'&&getComputedStyle(hm).display!=='none'){toast('Hãy mở văn bản cần in trước (Soạn văn bản mới hoặc Mở file), rồi bấm In / PDF ở Bước 5.');return}document.body.dataset.step='5';toast('Nếu hộp thoại in không hiện, hãy mở file HTML trên máy rồi bấm lại.');setTimeout(()=>window.print(),50)};
   $('btnCopy').onclick=async()=>{closeMenus();const p=$('paper');const html=p.innerHTML.replace(/<\/?mark>/g,'');
     try{await navigator.clipboard.write([new ClipboardItem({'text/html':new Blob([`<div style="font-family:'Times New Roman';font-size:${S.coChu}pt">${html}</div>`],{type:'text/html'}),'text/plain':new Blob([p.innerText],{type:'text/plain'})})]);toast('Đã sao chép. Dán vào Word bằng Ctrl+V.')}
     catch(e){try{await navigator.clipboard.writeText(p.innerText);toast('Đã sao chép dạng chữ thường.')}catch(e2){const r=document.createRange();r.selectNodeContents(p);const s=getSelection();s.removeAllRanges();s.addRange(r);toast('Đã chọn toàn bộ văn bản, bấm Ctrl+C để sao chép.')}}};
@@ -1822,7 +1823,8 @@ body[data-step="1"] .paperpane,body[data-step="1"] .issues,body[data-step="2"] .
 </div>
 <div class="home" id="homeScreen">
 <div class="box">
-<img src="logo-dinhcong.png" alt="Logo DinhCong" style="width:72px;height:72px;border-radius:50%;object-fit:cover;display:block;margin:0 auto 12px"><h1>PHẦN MỀM SOẠN THẢO VĂN BẢN NĐ30 - TRẠM Y TẾ XÃ HIỆP HƯNG</h1>
+<img src="logo-dinhcong.png" alt="Logo DinhCong" style="width:90px;height:90px;border-radius:50%;object-fit:cover;margin-bottom:8px">
+<h1>PHẦN MỀM SOẠN THẢO VĂN BẢN NĐ30 - TRẠM Y TẾ XÃ HIỆP HƯNG</h1>
 <p>Tác giả: Nguyễn Công Dinh, Cần Thơ<br>Hỗ trợ kỹ thuật &amp; Key: Zalo 0386435510<br><span id="homeLic">Đang kiểm tra bản quyền…</span></p>
 <div class="btns">
 <button type="button" id="homeNew">Soạn văn bản mới</button>
@@ -1889,7 +1891,7 @@ body[data-step="1"] .paperpane,body[data-step="1"] .issues,body[data-step="2"] .
 </script>
 
 
-<div id="geminiPanel" style="border:2px solid #0ea5a4;border-radius:12px;padding:14px;margin:14px;background:#f0fdfa;font-family:'Segoe UI',system-ui,sans-serif">
+<div id="geminiPanel" style="border:2px solid #1447a6;border-radius:12px;padding:14px;margin:14px;background:#eef4fb;font-family:'Segoe UI',system-ui,sans-serif">
 <b>Phân tích và tư vấn bằng Gemini — chỉ dùng khi bạn xác nhận không có dữ liệu nhạy cảm</b>
 <p style="font-size:14px;color:#334155">Không gửi tên bệnh nhân, số CCCD, hồ sơ bệnh án hay văn bản mật vào đây. Chỉ gửi khung văn bản, câu hỏi chung hoặc đoạn văn đã xóa thông tin cá nhân. Kết quả của Gemini chỉ là tư vấn, cán bộ phải kiểm tra lại tên, số, ngày và căn cứ trước khi ký.</p>
 <label style="display:block;margin:6px 0">API key Gemini (chỉ lưu trên máy này, không lưu trong code)<br><input type="password" id="geminiKey" style="width:100%;padding:8px"></label>
