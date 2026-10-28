@@ -1801,6 +1801,7 @@ init();
 </script>
 
 <style id="wizard-css">
+.toast{z-index:200!important}
 .wizard{position:sticky;top:0;z-index:50;background:#fff;border-bottom:2px solid #1447a6;padding:8px 12px;display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-family:'Segoe UI',system-ui,sans-serif}
 .wizard b{margin-right:8px;color:#1447a6}
 .wizard button{border:1px solid #cbd5e1;background:#f1f5f9;border-radius:999px;padding:8px 14px;font-size:15px;cursor:pointer}
@@ -1835,7 +1836,7 @@ body[data-step="1"] .paperpane,body[data-step="1"] .issues,body[data-step="2"] .
 <button type="button" data-step="3">3 · Soạn nội dung</button>
 <button type="button" data-step="4">4 · Kiểm tra NĐ30</button>
 <button type="button" data-step="5">5 · Xem trước &amp; Xuất</button>
-<button type="button" id="wizardHome">Trang chính</button>
+<button type="button" id="wizardHome">Trang chính</button><button type="button" id="wizardExit">Thoát</button>
 <span class="lic" id="wizardLic"></span>
 </div>
 <div class="home" id="homeScreen">
@@ -1848,6 +1849,7 @@ body[data-step="1"] .paperpane,body[data-step="1"] .issues,body[data-step="2"] .
 <button type="button" class="secondary" id="homeOpen">Mở file (.docx, .pdf)</button>
 <button type="button" class="secondary" id="homeDrafts">Quản lý bản nháp</button>
 <button type="button" class="secondary" id="homeExit">Thoát phần mềm</button>
+<p id="homeExitMsg" style="display:none;font-size:14px;color:#b3261e">Để thoát phần mềm, hãy đóng tab hoặc cửa sổ trình duyệt (bấm nút X hoặc Ctrl+W).</p>
 <button type="button" class="secondary" id="homeDownload">Tải file này về máy (.html)</button>
 </div>
 <div id="draftList" style="text-align:left;display:none"></div>
@@ -1867,7 +1869,9 @@ body[data-step="1"] .paperpane,body[data-step="1"] .issues,body[data-step="2"] .
   document.getElementById('homeNew').onclick=function(){home.style.display='none';setStep(1)};
   document.getElementById('homeDownload').onclick=function(){var html='<!DOCTYPE html>\n'+document.documentElement.outerHTML;var blob=new Blob([html],{type:'text/html;charset=utf-8'});var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='Soan-thao-ND30-Cap-Xa.html';document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(a.href)},1000);try{toast('Đã tải file về máy. Mở file vừa tải, dùng thử 30 ngày, hết hạn thì nhập key bản quyền ở nút Bản quyền.')}catch(e){}};
   document.getElementById('wizardHome').onclick=function(){try{save()}catch(e){}home.style.display='flex';window.scrollTo(0,0)};
-  document.getElementById('homeExit').onclick=function(){if(window.nd30){window.close();return}try{toast('Hãy đóng tab hoặc cửa sổ trình duyệt để thoát phần mềm.')}catch(e){alert('Hãy đóng tab hoặc cửa sổ trình duyệt để thoát phần mềm.')}};
+  function doExit(){if(window.nd30){window.close();return}var m=document.getElementById('homeExitMsg');if(m){m.style.display='block'}try{toast('Hãy đóng tab hoặc cửa sổ trình duyệt để thoát phần mềm.')}catch(e){}try{window.close()}catch(e){}};
+  document.getElementById('homeExit').onclick=doExit;
+  document.getElementById('wizardExit').onclick=doExit;
   document.getElementById('homeOpen').onclick=function(){home.style.display='none';var f=document.getElementById('fileIn');if(f)f.click()};
   document.getElementById('homeDrafts').onclick=async function(){
     var box=document.getElementById('draftList');box.style.display='block';
