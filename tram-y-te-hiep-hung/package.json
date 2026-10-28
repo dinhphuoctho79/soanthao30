@@ -9,7 +9,8 @@
     "files": [
       "main.js",
       "preload.js",
-      "app/**/*"
+      "app/**/*",
+      "icon.ico"
     ],
     "nsis": {
       "allowToChangeInstallationDirectory": true,
@@ -23,7 +24,8 @@
     "productName": "Soạn thảo văn bản NĐ30 - Trạm Y tế Xã Hiệp Hưng",
     "win": {
       "artifactName": "Soan-thao-ND30-Tram-Y-Te-Hiep-Hung-Setup.${ext}",
-      "target": "nsis"
+      "target": "nsis",
+      "icon": "icon.ico"
     }
   },
   "description": "Phần mềm soạn thảo văn bản NĐ30 cho Trạm Y tế Xã Hiệp Hưng, Cần Thơ, có phân tích và tư vấn bằng Gemini qua key lưu trên máy. Tác giả: Nguyễn Công Dinh, Cần Thơ.",
