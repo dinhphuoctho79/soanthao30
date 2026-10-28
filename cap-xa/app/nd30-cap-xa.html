@@ -1848,6 +1848,7 @@ body[data-step="1"] .paperpane,body[data-step="1"] .issues,body[data-step="2"] .
 <button type="button" class="secondary" id="homeOpen">Mở file (.docx, .pdf)</button>
 <button type="button" class="secondary" id="homeDrafts">Quản lý bản nháp</button>
 <button type="button" class="secondary" id="homeExit">Thoát phần mềm</button>
+<button type="button" class="secondary" id="homeDownload">Tải file này về máy (.html)</button>
 </div>
 <div id="draftList" style="text-align:left;display:none"></div>
 <p style="font-size:14px;color:#475569">Chạy offline trên máy của bạn. Văn bản không được gửi lên máy chủ hay AI đám mây. Kiểm tra lại tên, số, ngày và căn cứ trước khi ký và phát hành.</p>
@@ -1864,6 +1865,7 @@ body[data-step="1"] .paperpane,body[data-step="1"] .issues,body[data-step="2"] .
   // Home buttons
   var home=document.getElementById('homeScreen');
   document.getElementById('homeNew').onclick=function(){home.style.display='none';setStep(1)};
+  document.getElementById('homeDownload').onclick=function(){var html='<!DOCTYPE html>\n'+document.documentElement.outerHTML;var blob=new Blob([html],{type:'text/html;charset=utf-8'});var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='Soan-thao-ND30-Cap-Xa.html';document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(a.href)},1000);try{toast('Đã tải file về máy. Mở file vừa tải, dùng thử 30 ngày, hết hạn thì nhập key bản quyền ở nút Bản quyền.')}catch(e){}};
   document.getElementById('wizardHome').onclick=function(){try{save()}catch(e){}home.style.display='flex';window.scrollTo(0,0)};
   document.getElementById('homeExit').onclick=function(){if(window.nd30){window.close();return}try{toast('Hãy đóng tab hoặc cửa sổ trình duyệt để thoát phần mềm.')}catch(e){alert('Hãy đóng tab hoặc cửa sổ trình duyệt để thoát phần mềm.')}};
   document.getElementById('homeOpen').onclick=function(){home.style.display='none';var f=document.getElementById('fileIn');if(f)f.click()};
