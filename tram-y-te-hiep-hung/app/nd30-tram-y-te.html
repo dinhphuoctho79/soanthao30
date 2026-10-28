@@ -1001,7 +1001,7 @@ function render(){
     ${k==='cv'&&S.trichYeu?`<div class="c13 lh1" style="margin-top:3pt;padding:0 2mm">V/v ${hl(normTrichYeu(S.trichYeu),'trichYeu')}</div>`:''}
     ${S.khan?`<div class="khan">${esc(S.khan)}</div>`:''}</td>
     <td class="r"><div class="c12 b lh1">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</div><div class="c13 b lh1">Độc lập - Tự do - Hạnh phúc</div><div class="rule" style="width:59mm"></div>
-    <div class="i" style="margin-top:6pt">${esc(ngayLine())}</div></td></tr></table>`);
+    <div class="i c13" style="margin-top:6pt;text-wrap:balance">${esc(ngayLine())}</div></td></tr></table>`);
   if(k!=='cv'){
     P.push(`<div class="title">${esc(up(L[1]))}</div>`);
     if(S.trichYeu)P.push(`<div class="center b lh1" style="padding:0 12mm;text-wrap:balance">${hl(S.trichYeu.trim(),'trichYeu')}</div>`);
