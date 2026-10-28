@@ -1,0 +1,43 @@
+{
+  "author": "Nguyễn Công Dinh, Cần Thơ",
+  "build": {
+    "appId": "vn.nd30.capxa",
+    "copyright": "Copyright © Nguyễn Công Dinh",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "app/**/*"
+    ],
+    "nsis": {
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "deleteAppDataOnUninstall": false,
+      "oneClick": false,
+      "shortcutName": "Soạn thảo NĐ30 - Trạm Y tế Hiệp Hưng",
+      "uninstallDisplayName": "Soạn thảo văn bản NĐ30 - Cấp xã"
+    },
+    "productName": "Soạn thảo văn bản NĐ30 - Trạm Y tế Xã Hiệp Hưng",
+    "win": {
+      "artifactName": "Soan-thao-ND30-Tram-Y-Te-Hiep-Hung-Setup.${ext}",
+      "target": "nsis"
+    }
+  },
+  "description": "Phần mềm soạn thảo văn bản NĐ30 cho Trạm Y tế Xã Hiệp Hưng, Cần Thơ, có phân tích và tư vấn bằng Gemini qua key lưu trên máy. Tác giả: Nguyễn Công Dinh, Cần Thơ.",
+  "devDependencies": {
+    "electron": "^34.0.0",
+    "electron-builder": "^25.0.0"
+  },
+  "main": "main.js",
+  "name": "soan-thao-nd30-tram-y-te-hiep-hung",
+  "productName": "Soạn thảo văn bản NĐ30 - Trạm Y tế Xã Hiệp Hưng",
+  "scripts": {
+    "build:win": "electron-builder --win nsis",
+    "dist": "electron-builder --win nsis",
+    "start": "electron ."
+  },
+  "version": "1.0.0"
+}
