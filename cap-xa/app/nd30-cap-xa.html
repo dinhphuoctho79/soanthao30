@@ -265,7 +265,7 @@ dialog textarea{min-height:320px;font-family:var(--font-doc);font-size:15px}
 @media print{
   @page{size:A4;margin:0}
   body{background:#fff}
-  .bar,.form,.issues,.paperhead,body::before,.toast,.dropzone,.wizard,#wizardBar,.home,.profiles,dialog{display:none!important}
+  .bar,.form,.issues,.paperhead,body::before,.toast,.dropzone,.wizard,#wizardBar,.home,.profiles,dialog,#geminiPanel{display:none!important}
   body[data-step] .paperpane{display:block!important;overflow:visible!important}
   .paperpane{display:block!important;overflow:visible!important}
   body{background-image:none!important}
@@ -620,11 +620,11 @@ const BLANK_DOC={so:'',khan:'',deTrongNgay:false,trichYeu:'',kinhGui:'',thamQuye
 let S={...ORG_DEFAULT,...TPL.qdloi,ngay:today(),coChu:'14',gianDong:'1.2',showMark:true};
 let firstRun=true;
 function load(){
-  try{const o=JSON.parse(localStorage.getItem('nd30_org')||'null');if(o){if(o.vietTat==='BVNVT')o.vietTat='UBND';Object.assign(S,o)}}catch(e){}
-  try{const d=JSON.parse(localStorage.getItem('nd30_draft')||'null');if(d){if(d.vietTat==='BVNVT')d.vietTat='UBND';Object.assign(S,d);firstRun=false}}catch(e){}
+  try{const o=JSON.parse(localStorage.getItem('nd30_org_cap')||localStorage.getItem('nd30_org')||'null');if(o){if(o.vietTat==='BVNVT')o.vietTat='UBND';if(!(o.coQuanBanHanh&&o.coQuanBanHanh.indexOf('TRẠM Y TẾ')>=0))Object.assign(S,o)}}catch(e){}
+  try{const d=JSON.parse(localStorage.getItem('nd30_draft_cap')||localStorage.getItem('nd30_draft_cap')||'null');if(d){if(d.vietTat==='BVNVT')d.vietTat='UBND';if(!(d.coQuanBanHanh&&d.coQuanBanHanh.indexOf('TRẠM Y TẾ')>=0)){Object.assign(S,d);firstRun=false}}}catch(e){}
 }
 function save(){
-  try{localStorage.setItem('nd30_draft',JSON.stringify(S));const o={};ORG_KEYS.forEach(k=>o[k]=S[k]);localStorage.setItem('nd30_org',JSON.stringify(o))}catch(e){}
+  try{localStorage.setItem('nd30_draft_cap',JSON.stringify(S));const o={};ORG_KEYS.forEach(k=>o[k]=S[k]);localStorage.setItem('nd30_org_cap',JSON.stringify(o))}catch(e){}
 }
 
 /* ============ TIỆN ÍCH CHỮ ============ */
@@ -1877,9 +1877,9 @@ body[data-step="1"] .paperpane,body[data-step="1"] .issues,body[data-step="2"] .
     var box=document.getElementById('draftList');box.style.display='block';
     var items=[];
     try{if(window.nd30&&window.nd30.listDrafts)items=await window.nd30.listDrafts()}catch(e){}
-    if(!items.length){var raw='';try{raw=localStorage.getItem('nd30_draft')||''}catch(e){} items=raw?[{id:'local',name:'Bản nháp đang soạn (trình duyệt)',updatedAt:new Date().toISOString()}]:[]}
+    if(!items.length){var raw='';try{raw=localStorage.getItem('nd30_draft_cap')||''}catch(e){} items=raw?[{id:'local',name:'Bản nháp đang soạn (trình duyệt)',updatedAt:new Date().toISOString()}]:[]}
     box.innerHTML='<b>Bản nháp đã lưu</b><ul>'+(items.length?items.map(function(d){return '<li>'+d.name+' — '+(d.updatedAt||'')+' <button type="button" data-open="'+d.id+'">Mở</button></li>'}).join(''):'<li>Chưa có bản nháp nào.</li>')+'</ul><p style="font-size:13px">Trong bản Electron, bản nháp lưu trong thư mục dữ liệu của ứng dụng và tự động lưu mỗi 30 giây. Nút Xuất/Phục hồi bản nháp JSON nằm ở bước 3 trong tài liệu hướng dẫn.</p>';
-    box.querySelectorAll('[data-open]').forEach(function(btn){btn.onclick=async function(){try{if(window.nd30&&window.nd30.loadDraft){var d=await window.nd30.loadDraft(btn.dataset.open);if(d&&d.data){localStorage.setItem('nd30_draft',JSON.stringify(d.data));location.reload();return}}}catch(e){}home.style.display='none';setStep(3)}});
+    box.querySelectorAll('[data-open]').forEach(function(btn){btn.onclick=async function(){try{if(window.nd30&&window.nd30.loadDraft){var d=await window.nd30.loadDraft(btn.dataset.open);if(d&&d.data){localStorage.setItem('nd30_draft_cap',JSON.stringify(d.data));location.reload();return}}}catch(e){}home.style.display='none';setStep(3)}});
   };
   // Commune profiles (Step 1)
   var form=document.querySelector('.form .cards'); if(!form) form=document.querySelector('.form');
@@ -1911,7 +1911,7 @@ body[data-step="1"] .paperpane,body[data-step="1"] .issues,body[data-step="2"] .
     nd.addEventListener('input',function(){if(syncing)return;var rows=parsePipe();if(rows.length)renderGrid(rows)});
   }
   // Auto-save mirror to Electron every 30s
-  setInterval(function(){try{if(window.nd30&&window.nd30.saveDraft){var raw=localStorage.getItem('nd30_draft');if(raw)window.nd30.saveDraft({id:'autosave',name:'Bản nháp tự động lưu',data:JSON.parse(raw)})}}catch(e){}},30000);
+  setInterval(function(){try{if(window.nd30&&window.nd30.saveDraft){var raw=localStorage.getItem('nd30_draft_cap');if(raw)window.nd30.saveDraft({id:'autosave',name:'Bản nháp tự động lưu',data:JSON.parse(raw)})}}catch(e){}},30000);
 })();
 </script>
 
