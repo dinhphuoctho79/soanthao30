@@ -265,7 +265,7 @@ dialog textarea{min-height:320px;font-family:var(--font-doc);font-size:15px}
 @media print{
   @page{size:A4;margin:0}
   body{background:#fff}
-  .bar,.form,.issues,.paperhead,body::before,.toast,.dropzone,.wizard,#wizardBar,.home,.profiles,dialog{display:none!important}
+  .bar,.form,.issues,.paperhead,body::before,.toast,.dropzone,.wizard,#wizardBar,.home,.profiles,dialog,#geminiPanel{display:none!important}
   body[data-step] .paperpane{display:block!important;overflow:visible!important}
   .paperpane{display:block!important;overflow:visible!important}
   body{background-image:none!important}
@@ -604,11 +604,11 @@ const BLANK_DOC={so:'',khan:'',deTrongNgay:false,trichYeu:'',kinhGui:'',thamQuye
 let S={...ORG_DEFAULT,...TPL.qdloi,ngay:today(),coChu:'14',gianDong:'1.2',showMark:true};
 let firstRun=true;
 function load(){
-  try{const o=JSON.parse(localStorage.getItem('nd30_org')||'null');if(o){if(o.vietTat==='BVNVT')o.vietTat='UBND';Object.assign(S,o)}}catch(e){}
-  try{const d=JSON.parse(localStorage.getItem('nd30_draft')||'null');if(d){if(d.vietTat==='BVNVT')d.vietTat='UBND';Object.assign(S,d);firstRun=false}}catch(e){}
+  try{const o=JSON.parse(localStorage.getItem('nd30_org_tram')||'null');if(o){if(o.vietTat==='BVNVT')o.vietTat='TYT';Object.assign(S,o)}}catch(e){}
+  try{const d=JSON.parse(localStorage.getItem('nd30_draft_tram')||'null');if(d){if(d.vietTat==='BVNVT')d.vietTat='TYT';Object.assign(S,d);firstRun=false}}catch(e){}
 }
 function save(){
-  try{localStorage.setItem('nd30_draft',JSON.stringify(S));const o={};ORG_KEYS.forEach(k=>o[k]=S[k]);localStorage.setItem('nd30_org',JSON.stringify(o))}catch(e){}
+  try{localStorage.setItem('nd30_draft_tram',JSON.stringify(S));const o={};ORG_KEYS.forEach(k=>o[k]=S[k]);localStorage.setItem('nd30_org_tram',JSON.stringify(o))}catch(e){}
 }
 
 /* ============ TIỆN ÍCH CHỮ ============ */
@@ -1765,7 +1765,7 @@ function init(){
       el.scrollIntoView({block:'center',behavior:'smooth'})}
   });
   $('chips').addEventListener('click',e=>{const c=e.target.closest('.chip');if(!c)return;FILTER=c.dataset.g;renderIssues(check())});
-  $('tplMenu').addEventListener('click',e=>{const b=e.target.closest('[data-tpl]');if(!b)return;const v=b.dataset.tpl;Object.assign(S,TPL[v],{ngay:today()});$('banner').hidden=v!=='qdloi';closeMenus();toForm();refresh(true);toast('Đã mở mẫu: '+b.innerText.split('\n')[0]+'.')});
+  $('tplMenu').addEventListener('click',e=>{const b=e.target.closest('[data-tpl]');if(!b)return;const v=b.dataset.tpl;Object.assign(S,TPL[v],{ngay:today()});Object.assign(S,ORG_DEFAULT);$('banner').hidden=v!=='qdloi';closeMenus();toForm();refresh(true);toast('Đã mở mẫu: '+b.innerText.split('\n')[0]+'.')});
   initExtras();initAI();initLic();initHelp();
   $('btnPaste').onclick=()=>{closeMenus();$('pasteBox').value='';$('dlg').showModal();$('pasteBox').focus()};
   $('dlgCancel').onclick=()=>$('dlg').close();
@@ -1785,7 +1785,9 @@ init();
 </script>
 
 <style id="wizard-css">
-.toast{z-index:200!important}.wizard{position:sticky;top:0;z-index:50;background:#fff;border-bottom:2px solid #1447a6;padding:8px 12px;display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-family:'Segoe UI',system-ui,sans-serif}
+.toast{z-index:200!important}
+#geminiPanel{break-inside:avoid}#geminiOut{break-inside:avoid}
+.wizard{position:sticky;top:0;z-index:50;background:#fff;border-bottom:2px solid #1447a6;padding:8px 12px;display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-family:'Segoe UI',system-ui,sans-serif}
 .wizard b{margin-right:8px;color:#1447a6}
 .wizard button{border:1px solid #cbd5e1;background:#f1f5f9;border-radius:999px;padding:8px 14px;font-size:15px;cursor:pointer}
 .wizard button.active{background:#1447a6;color:#fff;border-color:#1447a6;font-weight:700}
@@ -1831,7 +1833,8 @@ body[data-step="1"] .paperpane,body[data-step="1"] .issues,body[data-step="2"] .
 <button type="button" id="homeNew">Soạn văn bản mới</button>
 <button type="button" class="secondary" id="homeOpen">Mở file (.docx, .pdf)</button>
 <button type="button" class="secondary" id="homeDrafts">Quản lý bản nháp</button>
-<button type="button" class="secondary" id="homeExit">Thoát phần mềm</button><p id="homeExitMsg" style="display:none;font-size:14px;color:#b3261e">Để thoát phần mềm, hãy đóng tab hoặc cửa sổ trình duyệt (bấm nút X hoặc Ctrl+W).</p>
+<button type="button" class="secondary" id="homeExit">Thoát phần mềm</button>
+<p id="homeExitMsg" style="display:none;font-size:14px;color:#b3261e">Để thoát phần mềm, hãy đóng tab hoặc cửa sổ trình duyệt (bấm nút X hoặc Ctrl+W).</p>
 <button type="button" class="secondary" id="homeDownload">Tải file này về máy (.html)</button>
 </div>
 <div id="draftList" style="text-align:left;display:none"></div>
@@ -1851,19 +1854,21 @@ body[data-step="1"] .paperpane,body[data-step="1"] .issues,body[data-step="2"] .
   document.getElementById('homeNew').onclick=function(){home.style.display='none';setStep(1)};
   document.getElementById('homeDownload').onclick=function(){var html='<!DOCTYPE html>\n'+document.documentElement.outerHTML;var blob=new Blob([html],{type:'text/html;charset=utf-8'});var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='Soan-thao-ND30-Tram-Y-Te-Hiep-Hung.html';document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(a.href)},1000);try{toast('Đã tải file về máy. Mở file vừa tải, dùng thử 30 ngày, hết hạn thì nhập key bản quyền ở nút Bản quyền.')}catch(e){}};
   document.getElementById('wizardHome').onclick=function(){try{save()}catch(e){}home.style.display='flex';window.scrollTo(0,0)};
-  function doExit(){if(window.nd30){window.close();return}var m=document.getElementById('homeExitMsg');if(m){m.style.display='block'}try{toast('Hãy đóng tab hoặc cửa sổ trình duyệt để thoát phần mềm.')}catch(e){}try{window.close()}catch(e){}}; document.getElementById('homeExit').onclick=doExit; document.getElementById('wizardExit').onclick=doExit;
+  function doExit(){if(window.nd30){window.close();return}var m=document.getElementById('homeExitMsg');if(m){m.style.display='block'}try{toast('Hãy đóng tab hoặc cửa sổ trình duyệt để thoát phần mềm.')}catch(e){}try{window.close()}catch(e){}};
+  document.getElementById('homeExit').onclick=doExit;
+  document.getElementById('wizardExit').onclick=doExit;
   document.getElementById('homeOpen').onclick=function(){home.style.display='none';var f=document.getElementById('fileIn');if(f)f.click()};
   document.getElementById('homeDrafts').onclick=async function(){
     var box=document.getElementById('draftList');box.style.display='block';
     var items=[];
     try{if(window.nd30&&window.nd30.listDrafts)items=await window.nd30.listDrafts()}catch(e){}
-    if(!items.length){var raw='';try{raw=localStorage.getItem('nd30_draft')||''}catch(e){} items=raw?[{id:'local',name:'Bản nháp đang soạn (trình duyệt)',updatedAt:new Date().toISOString()}]:[]}
+    if(!items.length){var raw='';try{raw=localStorage.getItem('nd30_draft_tram')||''}catch(e){} items=raw?[{id:'local',name:'Bản nháp đang soạn (trình duyệt)',updatedAt:new Date().toISOString()}]:[]}
     box.innerHTML='<b>Bản nháp đã lưu</b><ul>'+(items.length?items.map(function(d){return '<li>'+d.name+' — '+(d.updatedAt||'')+' <button type="button" data-open="'+d.id+'">Mở</button></li>'}).join(''):'<li>Chưa có bản nháp nào.</li>')+'</ul><p style="font-size:13px">Trong bản Electron, bản nháp lưu trong thư mục dữ liệu của ứng dụng và tự động lưu mỗi 30 giây. Nút Xuất/Phục hồi bản nháp JSON nằm ở bước 3 trong tài liệu hướng dẫn.</p>';
-    box.querySelectorAll('[data-open]').forEach(function(btn){btn.onclick=async function(){try{if(window.nd30&&window.nd30.loadDraft){var d=await window.nd30.loadDraft(btn.dataset.open);if(d&&d.data){localStorage.setItem('nd30_draft',JSON.stringify(d.data));location.reload();return}}}catch(e){}home.style.display='none';setStep(3)}});
+    box.querySelectorAll('[data-open]').forEach(function(btn){btn.onclick=async function(){try{if(window.nd30&&window.nd30.loadDraft){var d=await window.nd30.loadDraft(btn.dataset.open);if(d&&d.data){localStorage.setItem('nd30_draft_tram',JSON.stringify(d.data));location.reload();return}}}catch(e){}home.style.display='none';setStep(3)}});
   };
   // Commune profiles (Step 1)
   var form=document.querySelector('.form .cards'); if(!form) form=document.querySelector('.form');
-  var prof=document.createElement('div'); prof.className='profiles'; prof.innerHTML='<button type="button" data-prof="tyt">Trạm Y tế Xã Hiệp Hưng</button><button type="button" data-prof="ubnd">UBND xã</button><button type="button" data-prof="hdnd">HĐND xã</button><button type="button" data-prof="vp">Văn phòng HĐND &amp; UBND xã</button>';
+  var prof=document.createElement('div'); prof.className='profiles'; prof.innerHTML='<button type="button" data-prof="tyt">Trạm Y tế Xã Hiệp Hưng</button>';
   if(form&&form.parentNode)form.parentNode.insertBefore(prof,form.nextSibling);
   function setField(id,val){var el=document.getElementById(id);if(!el)return;el.value=val;el.dispatchEvent(new Event(el.tagName==='SELECT'?'change':'input',{bubbles:true}))}
   var PROFILES={
@@ -1892,7 +1897,7 @@ body[data-step="1"] .paperpane,body[data-step="1"] .issues,body[data-step="2"] .
     nd.addEventListener('input',function(){if(syncing)return;var rows=parsePipe();if(rows.length)renderGrid(rows)});
   }
   // Auto-save mirror to Electron every 30s
-  setInterval(function(){try{if(window.nd30&&window.nd30.saveDraft){var raw=localStorage.getItem('nd30_draft');if(raw)window.nd30.saveDraft({id:'autosave',name:'Bản nháp tự động lưu',data:JSON.parse(raw)})}}catch(e){}},30000);
+  setInterval(function(){try{if(window.nd30&&window.nd30.saveDraft){var raw=localStorage.getItem('nd30_draft_tram');if(raw)window.nd30.saveDraft({id:'autosave',name:'Bản nháp tự động lưu',data:JSON.parse(raw)})}}catch(e){}},30000);
 })();
 </script>
 
