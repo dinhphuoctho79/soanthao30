@@ -1819,6 +1819,7 @@ body[data-step="1"] .paperpane,body[data-step="1"] .issues,body[data-step="2"] .
 <button type="button" data-step="3">3 · Soạn nội dung</button>
 <button type="button" data-step="4">4 · Kiểm tra NĐ30</button>
 <button type="button" data-step="5">5 · Xem trước &amp; Xuất</button>
+<button type="button" id="wizardHome">Trang chính</button>
 <span class="lic" id="wizardLic"></span>
 </div>
 <div class="home" id="homeScreen">
@@ -1830,6 +1831,7 @@ body[data-step="1"] .paperpane,body[data-step="1"] .issues,body[data-step="2"] .
 <button type="button" id="homeNew">Soạn văn bản mới</button>
 <button type="button" class="secondary" id="homeOpen">Mở file (.docx, .pdf)</button>
 <button type="button" class="secondary" id="homeDrafts">Quản lý bản nháp</button>
+<button type="button" class="secondary" id="homeExit">Thoát phần mềm</button>
 </div>
 <div id="draftList" style="text-align:left;display:none"></div>
 <p style="font-size:14px;color:#475569">Chạy offline trên máy của bạn. Văn bản không được gửi lên máy chủ hay AI đám mây. Kiểm tra lại tên, số, ngày và căn cứ trước khi ký và phát hành.</p>
@@ -1846,6 +1848,8 @@ body[data-step="1"] .paperpane,body[data-step="1"] .issues,body[data-step="2"] .
   // Home buttons
   var home=document.getElementById('homeScreen');
   document.getElementById('homeNew').onclick=function(){home.style.display='none';setStep(1)};
+  document.getElementById('wizardHome').onclick=function(){try{save()}catch(e){}home.style.display='flex';window.scrollTo(0,0)};
+  document.getElementById('homeExit').onclick=function(){if(window.nd30){window.close();return}try{toast('Hãy đóng tab hoặc cửa sổ trình duyệt để thoát phần mềm.')}catch(e){alert('Hãy đóng tab hoặc cửa sổ trình duyệt để thoát phần mềm.')}};
   document.getElementById('homeOpen').onclick=function(){home.style.display='none';var f=document.getElementById('fileIn');if(f)f.click()};
   document.getElementById('homeDrafts').onclick=async function(){
     var box=document.getElementById('draftList');box.style.display='block';
