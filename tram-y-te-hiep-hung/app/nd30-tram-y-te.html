@@ -487,7 +487,7 @@ dialog textarea{min-height:320px;font-family:var(--font-doc);font-size:15px}
   <div class="grid" id="aiNewBox">
     <label>Loại văn bản<select id="aiLoai"></select></label>
     <label>Mức độ chi tiết<select id="aiDetail"><option value="gon">Ngắn gọn</option><option value="day" selected>Đầy đủ</option></select></label>
-    <label class="full">Kính gửi / đối tượng nhận<input type="text" id="aiKG" placeholder="Ví dụ: Ủy ban nhân dân tỉnh tỉnh Vĩnh Long"></label>
+    <label class="full">Kính gửi / đối tượng nhận<input type="text" id="aiKG" placeholder="Ví dụ: Ủy ban nhân dân thành phố Cần Thơ"></label>
     <label class="full">Tóm tắt nội dung cần viết <span class="hint">(mỗi ý một dòng; có thể ghi “Lý do: …”, “Thời gian: …”, “Kinh phí: …”)</span><textarea id="aiTomTat"></textarea></label>
     <p class="hint full"><button type="button" class="btn small" id="aiExample">Điền ví dụ</button> Phần mềm không tự đặt ra số văn bản, ngày, số liệu hay tên người; chỗ thiếu để “…” cho bạn điền.</p>
   </div>
@@ -1752,7 +1752,7 @@ function initAI(){
   $('rpPick').onclick=()=>$('rpIn').click();$('rpIn').onchange=e=>{const f=e.target.files[0];e.target.value='';loadReplyFile(f)};
   let rpT;$('rpText').addEventListener('input',()=>{clearTimeout(rpT);rpT=setTimeout(showReplyInfo,300)});
   $('btnReply').onclick=()=>{openAI();const r=document.querySelector('input[name=aimode][value=reply]');r.checked=true;r.onchange()};
-  $('aiExample').onclick=()=>{$('aiLoai').value='CV';$('aiKG').value='Ủy ban nhân dân tỉnh tỉnh Vĩnh Long';$('aiTomTat').value='- xin điều chuyển 01 máy siêu âm tổng quát từ Khoa Chẩn đoán hình ảnh cho Trạm Y tế xã Quới An\n- Hiện trạng: khoa đang có 02 máy, 01 máy ít sử dụng\n- Lý do: trạm y tế chưa có máy siêu âm, người bệnh phải lên bệnh viện\n- Kinh phí vận chuyển, lắp đặt do bệnh viện chi trả'};
+  $('aiExample').onclick=()=>{$('aiLoai').value='CV';$('aiKG').value='Ủy ban nhân dân thành phố Cần Thơ';$('aiTomTat').value='- xin điều chuyển 01 máy siêu âm tổng quát từ Khoa Chẩn đoán hình ảnh cho Trạm Y tế Xã Hiệp Hưng, Cần Thơ\n- Hiện trạng: khoa đang có 02 máy, 01 máy ít sử dụng\n- Lý do: trạm y tế chưa có máy siêu âm, người bệnh phải lên Trung tâm Y tế khu vực\n- Kinh phí vận chuyển, lắp đặt do Trung tâm Y tế khu vực chi trả'};
   $('aiLocal').onclick=()=>{
     if(aiMode()==='reply'){if(!$('rpText').value.trim()){$('aiStatus').textContent='Hãy tải lên hoặc dán văn bản cấp trên gửi về.';return}
       const A=analyzeIncoming($('rpText').value);const g=genReply(A,$('rpLoai').value,$('rpY').value);applyGen(g.fields,g.notes,'Đã dựng khung văn bản phúc đáp.');$('dlgAI').close();return}
