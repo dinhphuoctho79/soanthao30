@@ -1813,7 +1813,15 @@ function init(){
   $('btnDocx').onclick=async()=>{closeMenus();try{const b=zip(docxFiles());
     if(DOWNLOADS){try{await DOWNLOADS.save({filename:fileName(),data:b});toast('Đã lưu '+fileName()+'.')}catch(e){toast(e&&e.code==='declined'?'Đã hủy tải file.':'Không tải được file trong trang này. Hãy mở phần mềm bằng file HTML trên máy.')}return}
     const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=fileName();document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500);toast('Đang tải '+fileName()+'. Nếu không thấy file, hãy mở phần mềm bằng file HTML trên máy.')}catch(err){toast('Không tạo được file Word: '+err.message)}};
-  $('btnPrint').onclick=()=>{closeMenus();var hm=document.getElementById('homeScreen');if(hm&&hm.style.display!=='none'&&getComputedStyle(hm).display!=='none'){toast('Hãy mở văn bản cần in trước (Soạn văn bản mới hoặc Mở file), rồi bấm In / PDF ở Bước 5.');return}document.body.dataset.step='5';toast('Nếu hộp thoại in không hiện, hãy mở file HTML trên máy rồi bấm lại.');setTimeout(()=>window.print(),50)};
+  $('btnPrint').onclick=()=>{closeMenus();var hm=document.getElementById('homeScreen');if(hm&&hm.style.display!=='none'&&getComputedStyle(hm).display!=='none'){toast('Hãy mở văn bản cần in trước (Soạn văn bản mới hoặc Mở file), rồi bấm In / PDF ở Bước 5.');return}
+  var miss=[];
+  if(!String(S.so||'').trim())miss.push('- Chưa có số văn bản (Số: còn trống)');
+  if(!String(S.hoTen||'').trim())miss.push('- Chưa ghi họ tên người ký');
+  if(String(S.coQuanChuQuan||'').includes('[')||String(S.coQuanBanHanh||'').includes('[')||String(S.kinhGui||'').includes('['))miss.push('- Cơ quan hoặc kính gửi còn chỗ nhắc [ ... ] chưa xác nhận tên thật');
+  if(/\[/.test(String(S.trichYeu||'')+' '+String(S.noiDung||'')))miss.push('- Trích yếu hoặc nội dung còn chỗ [ ... ] chưa điền xong');
+  if(S.deTrongNgay)miss.push('- Ngày còn để trống, chỉ giữ tháng và năm (điền ngày khi ký)');
+  if(miss.length&&!confirm('Văn bản này chưa hoàn thiện, in ra sẽ còn chỗ trống/chỗ nhắc như sau:\n'+miss.join('\n')+'\n\nBấm OK để in bản nháp này, Cancel để quay lại điền tiếp.'))return;
+  document.body.dataset.step='5';toast('Nếu hộp thoại in không hiện, hãy mở file HTML trên máy rồi bấm lại.');setTimeout(()=>window.print(),50)};
   $('btnCopy').onclick=async()=>{closeMenus();const p=$('paper');const html=p.innerHTML.replace(/<\/?mark>/g,'');
     try{await navigator.clipboard.write([new ClipboardItem({'text/html':new Blob([`<div style="font-family:'Times New Roman';font-size:${S.coChu}pt">${html}</div>`],{type:'text/html'}),'text/plain':new Blob([p.innerText],{type:'text/plain'})})]);toast('Đã sao chép. Dán vào Word bằng Ctrl+V.')}
     catch(e){try{await navigator.clipboard.writeText(p.innerText);toast('Đã sao chép dạng chữ thường.')}catch(e2){const r=document.createRange();r.selectNodeContents(p);const s=getSelection();s.removeAllRanges();s.addRange(r);toast('Đã chọn toàn bộ văn bản, bấm Ctrl+C để sao chép.')}}};
