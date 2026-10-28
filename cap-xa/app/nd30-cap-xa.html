@@ -469,6 +469,8 @@ dialog textarea{min-height:320px;font-family:var(--font-doc);font-size:15px}
 <dialog id="dlgLic" class="licdlg">
   <div class="lichead"><img src="logo-dinhcong.png" alt="Logo DinhCong" style="width:44px;height:44px;border-radius:50%;object-fit:cover;flex:none"><div><h2>Bản quyền phần mềm</h2><span>Soạn thảo văn bản NĐ30 - Cấp xã · Nguyễn Công Dinh</span></div></div>
   <div class="licstate" id="licState"></div>
+  <p class="hint" id="licMachine">ID máy / trình duyệt: đang tải…</p>
+  <p class="hint">Gửi ID máy này cùng tên đơn vị qua Zalo 0386435510 để nhận key bản quyền cho đúng máy này. Key hiện tại vẫn kiểm tra chữ ký và hạn dùng như trước; ID này dùng để tác giả cấp key đúng máy, không thay đổi cách kích hoạt cũ.</p>
   <p class="hint">Liên hệ Nguyễn Công Dinh qua Zalo 0386435510 để nhận key kích hoạt, dán vào ô bên dưới rồi bấm Kích hoạt.</p>
   <label>Tên đơn vị / người sử dụng<input type="text" id="licName" placeholder="Ví dụ: Văn phòng HĐND và UBND xã Tân Hưng"></label>
   <label>Key kích hoạt<textarea id="licKey" rows="4" placeholder="Dán key nhận được vào đây" spellcheck="false"></textarea></label>
@@ -1476,6 +1478,8 @@ function licOpen(){
 function initHelp(){$('btnHelp').onclick=()=>$('dlgHelp').showModal();$('hdClose').onclick=()=>$('dlgHelp').close();
   $('hdAll').onclick=()=>{const all=[...document.querySelectorAll('.hdsec')];const open=!all.every(d=>d.open);all.forEach(d=>d.open=open);$('hdAll').textContent=open?'Thu gọn':'Mở tất cả'}}
 function initLic(){
+  function getMachineId(){try{var id=localStorage.getItem('nd30_machine_id');if(!id){id='ND30-'+Math.random().toString(36).slice(2,10).toUpperCase()+'-'+Math.random().toString(36).slice(2,10).toUpperCase();localStorage.setItem('nd30_machine_id',id)}return id}catch(e){return 'ND30-UNKNOWN'}};
+  try{var mm=document.getElementById('licMachine');if(mm)mm.textContent='ID máy / trình duyệt: '+getMachineId()+' (bấm vào để sao chép)';mm.onclick=function(){try{navigator.clipboard.writeText(getMachineId());toast('Đã sao chép ID máy.')}catch(e){}}}catch(e){}
   $('btnLic').onclick=licOpen;$('licBadge').onclick=licOpen;
   $('dlgLic').addEventListener('cancel',e=>{if(LIC.state==='locked')e.preventDefault()});
   $('licLater').onclick=()=>{if(LIC.state!=='locked')$('dlgLic').close()};
@@ -1555,7 +1559,7 @@ function genReply(A,form,y){
   if(A.deadline)notes.push(`Hạn trả lời: ${A.deadline}.`);
   if(A.mail)notes.push(`Gửi kèm bản điện tử về: ${A.mail}.`);
   notes.push('Điền các chỗ “…” bằng số liệu thực tế, rồi bấm Chuẩn hóa tự động.');
-  return{fields:{loai:code,so:'',khan:'',deTrongNgay:true,thamQuyen:'',trichYeu:code==='CV'?trichYeu:cap(trichYeu),kinhGui:kg,canCu:'',noiDung:body.join('\n'),noiNhan:normNoiNhan(['Như trên','Ban Giám đốc (để báo cáo)','Lưu: VT, '+(S.donVi||'…')].join('\n'))},notes};
+  return{fields:{loai:code,so:'',khan:'',deTrongNgay:true,thamQuyen:'',trichYeu:code==='CV'?trichYeu:cap(trichYeu),kinhGui:kg,canCu:'',noiDung:body.join('\n'),noiNhan:normNoiNhan(['Như trên','Lãnh đạo cơ quan cấp trên (để báo cáo)','Lưu: VT, '+(S.donVi||'…')].join('\n'))},notes};
 }
 let RP=null;
 function showReplyInfo(){
@@ -1583,7 +1587,7 @@ ${$('rpText').value.slice(0,14000)}
 """
 
 Chỉ trả về MỘT đối tượng JSON, không giải thích:
-{"loai":"CV hoặc BC","trichYeu":"(công văn: phần sau “V/v”; báo cáo: cụm danh từ, không có tên loại)","kinhGui":["…"],"noiDung":["đoạn 1","đoạn 2"],"noiNhan":["Như trên;","Ban Giám đốc (để báo cáo);","Lưu: VT, ${S.donVi||'…'}."],"ghiChu":["hạn trả lời, nơi gửi bản điện tử và những việc cần chuẩn bị, tối đa 5 ý"]}`;
+{"loai":"CV hoặc BC","trichYeu":"(công văn: phần sau “V/v”; báo cáo: cụm danh từ, không có tên loại)","kinhGui":["…"],"noiDung":["đoạn 1","đoạn 2"],"noiNhan":["Như trên;","Lãnh đạo cơ quan cấp trên (để báo cáo);","Lưu: VT, ${S.donVi||'…'}."],"ghiChu":["hạn trả lời, nơi gửi bản điện tử và những việc cần chuẩn bị, tối đa 5 ý"]}`;
 }
 
 /* ============ SOẠN TỪ TÓM TẮT ============ */
@@ -1624,14 +1628,14 @@ function genLocal(code,kg,tom){
     body.push(`Kính trình ${kgT} xem xét, quyết định./.`);noiNhan=['- Như trên;','- Lưu: VT, '+(S.donVi||'…')+'.'];
   }else if(k==='qd'){
     if(!canCu.length)canCu=['Căn cứ Quyết định số …/QĐ-… ngày … tháng … năm … của … quy định chức năng, nhiệm vụ, quyền hạn và cơ cấu tổ chức của '+org];
-    canCu.push('Theo đề nghị của Trưởng phòng …');
-    body=[`Điều 1. ${cap(verbless)}.`,...rest.map((x,i)=>`${i+1}. ${x}${i<rest.length-1?';':'.'}`),...kv('kinh phí','Kinh phí'),'Điều 2. Quyết định này có hiệu lực kể từ ngày ký.',`Điều 3. Trưởng phòng …, Trưởng các khoa, phòng có liên quan và các cá nhân có tên tại Điều 1 chịu trách nhiệm thi hành Quyết định này./.`];
-    noiNhan=['- Như Điều 3;','- Ban Giám đốc;','- Lưu: VT, '+(S.donVi||'…')+'.'];notes.push('Điền căn cứ thẩm quyền và đơn vị đề nghị.');
+    canCu.push('Theo đề nghị của Thủ trưởng đơn vị …');
+    body=[`Điều 1. ${cap(verbless)}.`,...rest.map((x,i)=>`${i+1}. ${x}${i<rest.length-1?';':'.'}`),...kv('kinh phí','Kinh phí'),'Điều 2. Quyết định này có hiệu lực kể từ ngày ký.',`Điều 3. Thủ trưởng đơn vị …, Thủ trưởng các đơn vị, bộ phận liên quan và các cá nhân có tên tại Điều 1 chịu trách nhiệm thi hành Quyết định này./.`];
+    noiNhan=['- Như Điều 3;','- Lãnh đạo cơ quan cấp trên;','- Lưu: VT, '+(S.donVi||'…')+'.'];notes.push('Điền căn cứ thẩm quyền và đơn vị đề nghị.');
   }else if(code==='KH'){
     body=['I. MỤC ĐÍCH, YÊU CẦU','1. Mục đích',...(key['mục đích']||[`Tổ chức thực hiện hiệu quả ${verbless}.`]).map(x=>x.replace(/\.?$/,'.')),'2. Yêu cầu',...(key['yêu cầu']||['Triển khai đúng tiến độ, bảo đảm chất lượng, tiết kiệm, hiệu quả.']).map(x=>x.replace(/\.?$/,'.')),
       'II. NỘI DUNG',...num(rest.length?rest:['…']),...kv('thời gian','Thời gian thực hiện'),...kv('kinh phí','Kinh phí'),
-      'III. TỔ CHỨC THỰC HIỆN','1. Phòng … chủ trì, phối hợp với các khoa, phòng liên quan triển khai Kế hoạch; tổng hợp, báo cáo kết quả về Ban Giám đốc.','2. Trưởng các khoa, phòng phổ biến Kế hoạch đến viên chức, người lao động và tổ chức thực hiện.',`Trên đây là Kế hoạch ${verbless} của ${org}. Trong quá trình thực hiện, nếu có khó khăn, vướng mắc, các khoa, phòng báo cáo về Phòng … để tổng hợp, trình Giám đốc xem xét, giải quyết./.`];
-    noiNhan=['- Ban Giám đốc;','- Các khoa, phòng;','- Lưu: VT, '+(S.donVi||'…')+'.'];
+      'III. TỔ CHỨC THỰC HIỆN','1. Đơn vị … chủ trì, phối hợp với các đơn vị, bộ phận liên quan liên quan triển khai Kế hoạch; tổng hợp, báo cáo kết quả về Lãnh đạo cơ quan cấp trên.','2. Thủ trưởng các đơn vị, bộ phận liên quan phổ biến Kế hoạch đến viên chức, người lao động và tổ chức thực hiện.',`Trên đây là Kế hoạch ${verbless} của ${org}. Trong quá trình thực hiện, nếu có khó khăn, vướng mắc, các đơn vị, bộ phận liên quan báo cáo về đơn vị … để tổng hợp, trình Thủ trưởng cơ quan xem xét, giải quyết./.`];
+    noiNhan=['- Lãnh đạo cơ quan cấp trên;','- Các đơn vị, bộ phận;','- Lưu: VT, '+(S.donVi||'…')+'.'];
   }else if(code==='BC'){
     const kk=rest.filter(x=>/khó khăn|vướng|hạn chế|tồn tại/i.test(x)),kn=rest.filter(x=>/kiến nghị|đề nghị|đề xuất/i.test(x)),kq=rest.filter(x=>!kk.includes(x)&&!kn.includes(x));
     body=[`Thực hiện yêu cầu của ${kgT||'…'}, ${org} báo cáo ${verbless} như sau:`,'I. KẾT QUẢ THỰC HIỆN',...num([...kq,...(key['kết quả']||[])].length?[...kq,...(key['kết quả']||[])]:['…']),'II. KHÓ KHĂN, VƯỚNG MẮC',...num([...kk,...(key['khó khăn']||[])].length?[...kk,...(key['khó khăn']||[])]:['…']),'III. KIẾN NGHỊ, ĐỀ XUẤT',...num([...kn,...(key['kiến nghị']||[]),...(key['đề xuất']||[])].length?[...kn,...(key['kiến nghị']||[]),...(key['đề xuất']||[])]:['…']),`Trên đây là báo cáo ${verbless} của ${org}./.`];
@@ -1639,8 +1643,8 @@ function genLocal(code,kg,tom){
     body=[`${org} trân trọng kính mời ${kgT||'…'} tham dự ${verbless}.`,...(key['thời gian']||['…']).map(x=>'Thời gian: '+x+'.'),...(key['địa điểm']||['…']).map(x=>'Địa điểm: '+x+'.'),...(key['thành phần']?key['thành phần'].map(x=>'Thành phần: '+x+'.'):[]),...rest.map(x=>x+'.'),`Rất mong ${kgT||'quý đại biểu'} tham dự đúng thời gian./.`];
     noiNhan=['- Như trên;','- Lưu: VT, '+(S.donVi||'…')+'.'];
   }else{
-    body=[`${org} thông báo đến ${kgT||'các khoa, phòng'} ${verbless} như sau:`,...num([...rest,...kv('thời gian','Thời gian').map(x=>x.replace(/\.$/,'')),...kv('địa điểm','Địa điểm').map(x=>x.replace(/\.$/,''))].length?[...rest,...kv('thời gian','Thời gian').map(x=>x.replace(/\.$/,'')),...kv('địa điểm','Địa điểm').map(x=>x.replace(/\.$/,''))]:['…']),'Đề nghị các khoa, phòng triển khai thực hiện./.'];
-    noiNhan=['- Ban Giám đốc;','- Các khoa, phòng;','- Lưu: VT, '+(S.donVi||'…')+'.'];
+    body=[`${org} thông báo đến ${kgT||'các đơn vị, bộ phận liên quan'} ${verbless} như sau:`,...num([...rest,...kv('thời gian','Thời gian').map(x=>x.replace(/\.$/,'')),...kv('địa điểm','Địa điểm').map(x=>x.replace(/\.$/,''))].length?[...rest,...kv('thời gian','Thời gian').map(x=>x.replace(/\.$/,'')),...kv('địa điểm','Địa điểm').map(x=>x.replace(/\.$/,''))]:['…']),'Đề nghị các đơn vị, bộ phận liên quan triển khai thực hiện./.'];
+    noiNhan=['- Lãnh đạo cơ quan cấp trên;','- Các đơn vị, bộ phận;','- Lưu: VT, '+(S.donVi||'…')+'.'];
   }
   canCu=canCu.map((x,i)=>x.replace(/[.;,]*$/,'')+(i<canCu.length-1?';':(k==='qd'?'.':';')));
   const holes=(body.join(' ')+trichYeu+kgT+canCu.join(' ')).split('…').length-1;
